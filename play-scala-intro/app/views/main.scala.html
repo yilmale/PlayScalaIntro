@@ -1,0 +1,66 @@
+@(title: String)(content: Html)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")"/>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")"/>
+        <script src="@routes.Assets.versioned("javascripts/jquery-1.11.3.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.versioned("javascripts/vis.js")" type="text/javascript"></script>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/vis.css")"/>
+    
+     <style>
+        #header {
+             background-color:cadetblue;
+             color:white;
+             text-align:center;
+             padding:5px;
+            }
+        #nav {
+            line-height:30px;
+            background-color:#eeeeee;
+            color:black;
+            float:center;
+            padding:5px;
+        }
+        #section {
+            width:700px;
+            float:left;
+            color:black;
+            padding:10px;
+        }
+        
+        #aside {
+            width:450px;
+            float:right;
+            padding:10px;
+        }
+        #footer {
+            background-color:cadetblue;
+            color:white;
+            clear:both;
+            text-align:left;
+            padding:5px;
+        }
+    
+    </style> 
+    
+
+    
+    <style type="text/css">
+        #mynetwork {
+            width: 700px;
+            height: 400px;
+            border: 2px solid lightgray;
+        }
+    </style>
+
+        
+        
+    </head>
+    <body>
+        @content
+    </body>
+</html>

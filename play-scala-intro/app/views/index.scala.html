@@ -1,0 +1,115 @@
+@(person: Form[CreatePersonForm])(implicit messages: Messages)
+
+@import helper._
+
+@main("Ethical Advisor Tool") {
+
+
+
+<div id="header">
+<h1>Ethical Advisor</h1>
+</div>
+
+<div id="nav">
+
+
+<input type="file" id="fileinput" />
+<script type="text/javascript">
+  function readSingleFile(evt) {
+    //Retrieve the first (and only!) File from the FileList object
+    var f = evt.target.files[0]; 
+
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) { 
+	      var contents = r.result;
+          
+         var fileDisplayArea = document.getElementById('aboutDescription');
+         fileDisplayArea.innerHTML=contents;
+        
+      }
+      r.readAsText(f);
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+
+  document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+</script>
+
+
+<button onclick="myFunction()"><p style="font-size:12px">Compile</p></button>
+<button onclick="myFunction()"><p style="font-size:12px">Visualize Network</p></button>
+<button onclick="myFunction()"><p style="font-size:12px">Compute Active Nodes</p></button>
+<button onclick="myFunction()"><p style="font-size:12px">Simulate</p></button>
+<button onclick="myFunction()"><p style="font-size:12px">Clear Model</p></button>
+<button onclick="myFunction()"><p style="font-size:12px">Clear Console</p></button>
+
+</div>
+
+<div id="section">
+<script>
+  var canvas = document.querySelector("canvas");
+  var context = canvas.getContext("2d");
+
+</script>
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+    // create an array with nodes
+    var nodes = new vis.DataSet([
+        {id: 1, label: 'Node 1'},
+        {id: 2, label: 'Node 2'},
+        {id: 3, label: 'Node 3'},
+        {id: 4, label: 'Node 4'},
+        {id: 5, label: 'Node 5'}
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+        {from: 1, to: 3},
+        {from: 1, to: 2},
+        {from: 2, to: 4},
+        {from: 2, to: 5}
+    ]);
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+
+    // provide the data in the vis format
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {};
+
+    // initialize your network!
+    var network = new vis.Network(container, data, options);
+</script>
+</div>
+
+<div id="aside">
+<textarea rows="35" cols="55" id="aboutDescription"
+style="resize: none;" data-role="none"></textarea>
+</div>
+
+<div id="footer">
+Console
+
+</div>
+
+<br>
+
+
+  @form(routes.PersonController.addPerson()) {
+@inputText(person("name"))
+@inputText(person("age"))
+
+<div class="buttons">
+<input type="submit" value="Add Person"/>
+</div>
+}
+
+
+
+}
