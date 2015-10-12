@@ -10,6 +10,8 @@ import play.api.libs.json.Json
 import models._
 import dal._
 
+
+
 import scala.concurrent.{ ExecutionContext, Future }
 
 import javax.inject._
@@ -57,6 +59,27 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
       }
     )
   }
+  
+  def getEntities = Action { 
+  Ok("Got request [" + "]")
+}
+
+
+/*def addEntity = Action { implicit request =>
+  val body: AnyContent = request.body
+  val textBody: Option[String] = body.asText 
+  textBody.map { text =>
+    Ok("Got: " + text)
+  }.getOrElse {
+    BadRequest("Expecting text/plain request body")  
+  }
+  
+}*/
+
+
+def addEntity = Action { implicit request =>
+  Ok("Got request [" + request.body + "]")
+}
 
   /**
    * A REST endpoint that gets all the people as JSON.

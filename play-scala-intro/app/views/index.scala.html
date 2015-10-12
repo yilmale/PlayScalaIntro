@@ -36,8 +36,86 @@
 </script>
 
 
-<button onclick="myFunction()"><p style="font-size:12px">Compile</p></button>
-<button onclick="myFunction()"><p style="font-size:12px">Visualize Network</p></button>
+<script type="text/javascript">
+ function myTestGetFunction() {
+  $(function()
+    {
+        $.get("/entities", function(data, textStatus)
+        {
+                alert("Done, with the following status: " + textStatus + ". Here is the response: " + data);
+        });
+    }
+   );
+};
+
+</script>
+
+<button onclick="myTestGetFunction()"><p style="font-size:12px">Compile</p></button>
+
+
+<script type="text/javascript">
+ function myTestPostFunction() {
+  $(function()
+{
+        $.post("/entity",
+        {
+                name: "John Doe",
+                age: 32
+        },
+        function(data, textStatus)
+        {
+                alert("Response from server: " + data);
+        });
+});
+
+
+};
+
+</script>
+
+
+<button onclick="myTestPostFunction()"><p style="font-size:12px">Visualize Network</p></button>
+
+
+<form name="myForm" id="testForm">
+    <input type="text" name="first_name" value="" />
+    <input type="text" name="last_name" value="" />
+    <input type="button" id="submit1" value="Submit by Form ID1" />
+    <input type="button" id="submit2" value="Submit by Form ID2" />
+</form>
+
+<script>
+$(document).ready(function(){
+    $("#submit1").click(function() {
+        $.post("/entity", { name: "Levent" },
+        function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+    });
+    
+    $("#submit2").click(function() {
+    var text = '{"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"}';
+    var obj = JSON.parse(text)
+    $.ajax({
+    url : "/entity",
+    type: "POST",
+    contentType: "application/json",
+    data : obj,
+    dataType: "text",
+    success: function(data, textStatus, jqXHR)
+    {
+        alert("Data: " + data + "\nStatus: " + status);
+    }
+    });
+    })    
+    
+});
+</script>
+
+
+
+
+
 <button onclick="myFunction()"><p style="font-size:12px">Compute Active Nodes</p></button>
 <button onclick="myFunction()"><p style="font-size:12px">Simulate</p></button>
 
@@ -45,7 +123,7 @@
 
 <script type="text/javascript">
   function clearModel() {
-    document.getElementById('aboutDescription').innerHTML=" ";
+    document.getElementById('aboutDescription').innerHTML = " ";
   }
   
 </script>
@@ -105,16 +183,16 @@ Console
 
 <br>
 
+	<script type='text/javascript' src='@routes.Assets.versioned("javascripts/index.js")'></script>
+
+	<ul id="persons"></ul>
 
   @form(routes.PersonController.addPerson()) {
-@inputText(person("name"))
-@inputText(person("age"))
+		@inputText(person("name"))
+		@inputText(person("age"))
 
-<div class="buttons">
-<input type="submit" value="Add Person"/>
-</div>
-}
-
-
-
+		<div class="buttons">
+			<input type="submit" value="Add Person"/>
+		</div>
+	}
 }
