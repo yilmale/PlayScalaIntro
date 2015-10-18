@@ -9,7 +9,7 @@ import play.api.data.validation.Constraints._
 import play.api.libs.json.Json
 import models._
 import dal._
-
+import play.api.libs.json.JsValue
 
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -78,14 +78,42 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
 
 
 def addEntity = Action { implicit request =>
-  Ok("Got request [" + request.body + "]")
+  System.out.println(request.body)
+  val name = request.body.asFormUrlEncoded.get("name")
+  
+  System.out.println(name)
+  System.out.println(name.length)
+  System.out.println(name(0))  
+  var mystr:String = new String(name(0))
+  System.out.println("Derived string is " + mystr)
+  val age = request.body.asFormUrlEncoded.get("age[0][]")
+  System.out.println(age)
+  //Ok("Got request [" + request.body + "]")
+  val myStock = new Stock("GOOG", 650.0)
+  Ok(Json.toJson(myStock))
 }
+
+def addEntityJSON = Action { implicit request =>
+  System.out.println(request.body)
+  val myModel = request.body.asFormUrlEncoded.get("model")
+  var mystr:String = new String(myModel(0))
+  System.out.println("Received model specification is " + mystr)
+  val age = request.body.asFormUrlEncoded.get("age[0][]")
+  System.out.println(age)
+  val myStock = new Stock("GOOG", 650.0)
+  Ok(Json.toJson(myStock))
+}
+
+def getEntityJSONs = Action {
+    val myStock = new Stock("GOOG", 650.0)
+    Ok(Json.toJson(myStock))
+  }
 
   /**
    * A REST endpoint that gets all the people as JSON.
    */
   def getPersons = Action.async {
-  	repo.list().map { people =>
+    repo.list().map { people =>
       Ok(Json.toJson(people))
     }
   }

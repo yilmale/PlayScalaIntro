@@ -42,7 +42,7 @@
     {
         $.get("/entities", function(data, textStatus)
         {
-                alert("Done, with the following status: " + textStatus + ". Here is the response: " + data);
+                alert("Done, with the following status: " + textStatus + "Here is the response: " + data);
         });
     }
    );
@@ -50,7 +50,32 @@
 
 </script>
 
-<button onclick="myTestGetFunction()"><p style="font-size:12px">Compile</p></button>
+<!-- This is a comment --> 
+ <!-- <button onclick="myTestGetFunction()"><p style="font-size:12px">Compile</p></button> --> 
+ 
+ <script type="text/javascript">
+ function myCompileFunction() {
+  $(function()
+    {
+        var fileDisplayArea = document.getElementById('aboutDescription');
+        var contents = fileDisplayArea.textContent;
+        $.post("/entityJSON",
+        {
+                model: contents,
+                age: [[1, 2], [3, 4]]
+                
+        },
+        function(data, textStatus)
+        {
+                alert("Response from server: " + data.symbol + "  " + data.price);
+        });
+    });
+};
+
+</script>
+ 
+
+<button onclick="myCompileFunction()"><p style="font-size:12px">Compile</p></button>
 
 
 <script type="text/javascript">
@@ -60,11 +85,12 @@
         $.post("/entity",
         {
                 name: "John Doe",
-                age: 32
+                age: [[1, 2], [3, 4]]
+                
         },
         function(data, textStatus)
         {
-                alert("Response from server: " + data);
+                alert("Response from server: " + data.symbol + "  " + data.price);
         });
 });
 
@@ -76,43 +102,68 @@
 
 <button onclick="myTestPostFunction()"><p style="font-size:12px">Visualize Network</p></button>
 
-
+<!--
 <form name="myForm" id="testForm">
     <input type="text" name="first_name" value="" />
     <input type="text" name="last_name" value="" />
     <input type="button" id="submit1" value="Submit by Form ID1" />
     <input type="button" id="submit2" value="Submit by Form ID2" />
+    <input type="button" id="submit3" value="Submit by Form ID3" />
 </form>
 
 <script>
 $(document).ready(function(){
     $("#submit1").click(function() {
-        $.post("/entity", { name: "Levent" },
+        $.post("/entity", items,
         function(data, status){
         alert("Data: " + data + "\nStatus: " + status);
     });
     });
+
     
     $("#submit2").click(function() {
-    var text = '{"name":"John Johnson","street":"Oslo West 16","phone":"555 1234567"}';
-    var obj = JSON.parse(text)
     $.ajax({
-    url : "/entity",
+    url : "/entityJSON",
     type: "POST",
-    contentType: "application/json",
-    data : obj,
-    dataType: "text",
-    success: function(data, textStatus, jqXHR)
+    contentType: "application/form-url-encoded",
+    dataType: "application/json",
+    data: {
+                name: "John Doe",
+                age: [[1, 2], [3, 4]]
+                
+        },
+    success: function(mydata, status)
     {
-        alert("Data: " + data + "\nStatus: " + status);
+        alert("Data received " + mydata.symbol + mydata.price);
+    },
+    error: function( jqXhr, textStatus, errorThrown ){
+        alert(errorThrown);
     }
     });
-    })    
+    });   
     
-});
+    $("#submit3").click(function() {
+    $.ajax({
+    url : "/entityJSONs",
+    type: "GET",
+    dataType: "json",
+    success: function(data, status)
+    {
+        alert("Data received " + data.symbol + data.price);
+    },
+    error: function( jqXhr, textStatus, errorThrown ){
+        alert(errorThrown);
+    }
+    });
+    });   
+    
+    
+    
+});   
+
 </script>
 
-
+-->
 
 
 
