@@ -16,9 +16,44 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 import javax.inject._
 
+import schellingModel._
+
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout
+import edu.uci.ics.jung.algorithms.layout.FRLayout2
+import edu.uci.ics.jung.algorithms.layout.util.Relaxer
+import edu.uci.ics.jung.graph.UndirectedSparseMultigraph
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.Graph
+import edu.uci.ics.jung.graph.ObservableGraph
+import edu.uci.ics.jung.graph.util.Graphs
+import edu.uci.ics.jung.visualization.VisualizationViewer
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller
+import edu.uci.ics.jung.visualization.renderers.Renderer
+
+
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)
                                  (implicit ec: ExecutionContext) extends Controller with I18nSupport{
 
+  
+  
+  var g: Graph[String,Int] = null;
+  var og: ObservableGraph[String,Int] =null;
+  var ig = Graphs.synchronizedUndirectedGraph[String,Int](new UndirectedSparseMultigraph[String,Int]())
+  og = new ObservableGraph[String,Int](ig)   
+  g = og
+  
+  val ACTIVATION = 0.01
+  val ACTIVATIONTHRESHOLD = 0.20
+  val INITIALTHRESHOLD = 0.5
+  val CTHRESHOLD = 0.001 
+  val MAXITERATION = 200
+  val MAX = 1.0
+  val MIN = -1.0
+  val DECAYRATE = 0.05
+  var activations:Map[String,Double]  = Map()
+  var edgeWeights:Map[Int,Double] = Map()
+  
   /**
    * The mapping for the person form.
    */
@@ -89,6 +124,7 @@ def addEntity = Action { implicit request =>
   val age = request.body.asFormUrlEncoded.get("age[0][]")
   System.out.println(age)
   //Ok("Got request [" + request.body + "]")
+  //var pt : Point = new Point()
   val myStock = new Stock("GOOG", 650.0)
   Ok(Json.toJson(myStock))
 }
@@ -105,15 +141,15 @@ def addEntityJSON = Action { implicit request =>
 }
 
 def getEntityJSONs = Action {
-    val myStock = new Stock("GOOG", 650.0)
-    Ok(Json.toJson(myStock))
+  	val myStock = new Stock("GOOG", 650.0)
+  	Ok(Json.toJson(myStock))
   }
 
   /**
    * A REST endpoint that gets all the people as JSON.
    */
   def getPersons = Action.async {
-    repo.list().map { people =>
+  	repo.list().map { people =>
       Ok(Json.toJson(people))
     }
   }
