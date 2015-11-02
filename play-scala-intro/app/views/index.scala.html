@@ -67,7 +67,36 @@
         },
         function(data, textStatus)
         {
-                alert("Response from server: " + data.symbol + "  " + data.price);
+               // alert("Response from server: " + data.name + "  "+ data.nodes[0] + 
+               //"  " + data.adjList[0].name + " " + data.adjList[0].edgeWeights);
+                
+                var nodedata = new vis.DataSet();
+                var edges = new vis.DataSet();
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    nodedata.add({id: i, label: data.nodes[i]});
+                }
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    for (j=0; j<data.nodes.length; j++) {
+                        if (data.adjList[i].edgeWeights[j] > 0.0) {
+                            edges.add({from: i, to: j});
+                        }
+                    }
+                }
+                
+                var container = document.getElementById('mynetwork');
+                var data = {
+                    nodes: nodedata,
+                    edges: edges
+                };
+                var options = {
+                    edges: {
+                    arrows: 'to',
+                }
+            };
+                var network = new vis.Network(container, data, options);
+            
         });
     });
 };
@@ -90,7 +119,7 @@
         },
         function(data, textStatus)
         {
-                alert("Response from server: " + data.symbol + "  " + data.price);
+                alert("Response from server: " + data.name + "  " + data.price);
         });
 });
 
@@ -193,33 +222,7 @@ $(document).ready(function(){
 </script>
 <div id="mynetwork"></div>
 
-<script type="text/javascript">
-    // create an array with nodes
-    var nodes = new vis.DataSet([
-        {id: 1, label: 'Node 1'},
-        {id: 2, label: 'Node 2'},
-        {id: 3, label: 'Node 3'},
-        {id: 4, label: 'Node 4'},
-        {id: 5, label: 'Node 5'}
-    ]);
-    // create an array with edges
-    var edges = new vis.DataSet([
-        {from: 1, to: 3},
-        {from: 1, to: 2},
-        {from: 2, to: 4},
-        {from: 2, to: 5}
-    ]);
-    // create a network
-    var container = document.getElementById('mynetwork');
-    // provide the data in the vis format
-    var data = {
-        nodes: nodes,
-        edges: edges
-    };
-    var options = {};
-    // initialize your network!
-    var network = new vis.Network(container, data, options);
-</script>
+
 </div>
 
 <div id="aside">
