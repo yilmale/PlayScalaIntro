@@ -23,9 +23,8 @@
       r.onload = function(e) { 
 	      var contents = r.result;
           
-         var fileDisplayArea = document.getElementById('aboutDescription');
-         fileDisplayArea.innerHTML=contents;
-        
+          
+           $('#aboutDescription').val(contents) 
       }
       r.readAsText(f);
     } else { 
@@ -59,9 +58,10 @@
     {
         var fileDisplayArea = document.getElementById('aboutDescription');
         var contents = fileDisplayArea.textContent;
+        
         $.post("/entityJSON",
         {
-                model: contents,
+                model: $('#aboutDescription').val(),
                 age: [[1, 2], [3, 4]]
                 
         },
@@ -107,6 +107,8 @@
 
 </script>
  
+ 
+
 
 <button onclick="myCompileFunction()"><p style="font-size:12px">Compile</p></button>
 
@@ -207,7 +209,8 @@ $(document).ready(function(){
 
 <script type="text/javascript">
   function clearModel() {
-    document.getElementById('aboutDescription').innerHTML = " ";
+        $('#aboutDescription').val("");
+       
   }
   
 </script>
