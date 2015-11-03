@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import scala.collection.mutable.Map
+import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.ArrayBuffer
 
 class ModelParser(model:String, g:Graph[String,Int] ) {
     var xmlModel : String = model
@@ -57,16 +59,89 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
         }
       }   
     }
-    /*
+    
     def getNodes() : ListBuffer[String]  = {
-        var rt = new ListBuffer[String]
+        var rt = new ListBuffer[String]()
         var nStr :String = null
         var V = g.getVertices
         var itr = V.iterator()
         while (itr.hasNext()) {
             var myN = itr.next()
-            nStr = 
-    }*/
+            nStr = new String(myN)
+            rt += nStr
+        }
+        return rt
+    }
+    
+    def getActivations() : ListBuffer[Double] = {
+        var act = new ListBuffer[Double]()
+        var V = g.getVertices
+        var itr = V.iterator()
+        while (itr.hasNext()) {
+            var myN = itr.next()
+            var nActivation = activations(myN)
+            act += nActivation
+        }
+        return act
+    }
+    
+    def checkWeight(n1: String, n2: String) : Double = {
+        System.out.println("Checking the connection between " + n1 + " and " + n2)
+        var eWeight : Double = 0.0
+        var V = g.getVertices
+        var itr = V.iterator()
+        while (itr.hasNext()) {
+            var myN = itr.next()
+            if (myN == n1) {
+                System.out.println("Found source " + myN + " = " + n1)
+                var incIter = g.getIncidentEdges(myN).iterator()
+                while (incIter.hasNext()) {
+                    var myEdge = incIter.next()
+                    var nName= g.getEndpoints(myEdge).getSecond
+                    if ((nName == n2) && !(n1==n2)) {
+                        eWeight=edgeWeights(myEdge)
+                        System.out.println("Found " + n2 + " with weight " + eWeight) 
+                    }
+                }
+            }
+        }
+        return eWeight
+    }
+    
+    /*
+    def getEdgeWeights() : ArrayBuffer[ArrayBuffer[Double]]  = {
+        var edgeW = new ArrayBuffer[ArrayBuffer[Double]]()
+        var rt = new ListBuffer[String]()
+        var nStr :String = null
+        var V = g.getVertices
+        var itr = V.iterator()
+        while (itr.hasNext()) {
+            var myN = itr.next()
+            nStr = new String(myN)
+            rt += nStr
+        }
+        
+        var V1 = g.getVertices
+        var itr1 = V1.iterator()
+        while (itr.hasNext()) {
+            var incIter = g.getIncidentEdges(myN).iterator()
+            while (incIter.hasNext()) {
+                var myEdge = incIter.next()
+                var nName= g.getEndpoints(myEdge).getSecond
+            }
+        }
+        
+            var incIter = g.getIncidentEdges(myN).iterator()
+            while (incIter.hasNext()) {
+                var myEdge = incIter.next()
+                System.out.println("Incident edge number: "+ myEdge+" Weight is " + edgeWeights(myEdge) +
+                        " Source is "+g.getEndpoints(myEdge).getFirst+" Target is "+ g.getEndpoints(myEdge).getSecond)
+                System.out.println("The opposite vertex of"+myN+" in edge"+ myEdge+" is  "+ g.getOpposite(myN,myEdge))
+            }
+        }
+        return edgeW
+    }
+    */
     
     def parse() {
         var dbFactory = DocumentBuilderFactory.newInstance()

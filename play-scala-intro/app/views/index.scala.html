@@ -74,7 +74,11 @@
                 var edges = new vis.DataSet();
                 
                 for (i=0; i < data.nodes.length; i++) {
-                    nodedata.add({id: i, label: data.nodes[i]});
+                    if (data.activations[i] > 0.25) {
+                        nodedata.add({id: i, label: data.nodes[i], color:'red'});
+                    } else {
+                        nodedata.add({id: i, label: data.nodes[i]});
+                    }
                 }
                 
                 for (i=0; i < data.nodes.length; i++) {

@@ -17,7 +17,6 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 import javax.inject._
 
-import schellingModel._
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout
 import edu.uci.ics.jung.algorithms.layout.FRLayout2
@@ -37,7 +36,7 @@ import scala.collection.mutable.ListBuffer
 case class Location(lat: Double, long: Double)
 case class Resident(name: String, age: Int, role: Option[String])
 case class MRow(name: String, edgeWeights: Seq[Double])
-case class AdjMatrix(name: String, nodes: Seq[String], adjList: Seq[MRow])
+case class AdjMatrix(name: String, nodes: Seq[String], activations: Seq[Double], adjList: Seq[MRow])
 case class Place(name: String, location: Location, residents: Seq[Resident])
 
 class PersonController @Inject() (repo: PersonRepository, val messagesApi: MessagesApi)
@@ -87,6 +86,7 @@ class PersonController @Inject() (repo: PersonRepository, val messagesApi: Messa
       def writes(adjmatrix: AdjMatrix) = Json.obj(
         "name" -> adjmatrix.name,
         "nodes" -> adjmatrix.nodes,
+        "activations" -> adjmatrix.activations,
         "adjList" -> adjmatrix.adjList
       )
   }
@@ -218,6 +218,11 @@ def addEntityJSON = Action { implicit request =>
       "N3"
     ),
     Seq(
+      0.5,
+      0.0,
+      0.1
+    ),
+    Seq(
       MRow("N1",Seq(0.0, 0.5, 0.3)),
       MRow("N2",Seq(0.0, 0.0, 0.5)),
       MRow("N3",Seq(0.0, 0.0, 0.0))
@@ -233,21 +238,42 @@ def addEntityJSON = Action { implicit request =>
   
   var nodeList = new ListBuffer[String]()
   
-  nodeList += myNet.nodes(0)
-  nodeList += myNet.nodes(1)
-  nodeList += myNet.nodes(2)
+  nodeList = mParser.getNodes()
+  
+  System.out.println("NodeList is  " + nodeList)
+  
+  var activationList = new ListBuffer[Double]()
+  
+  activationList = mParser.getActivations()
+  
+  activationList(0) = 0.5
+  //nodeList += myNet.nodes(0)
+  //nodeList += myNet.nodes(1)
+  //nodeList += myNet.nodes(2)
   
   var rowList = new ListBuffer[MRow]()
   
-  var row1 = MRow(myNet.nodes(0),myNet.adjList(0).edgeWeights)
-  var row2 = MRow(myNet.nodes(1),myNet.adjList(1).edgeWeights)
-  var row3 = MRow(myNet.nodes(2),myNet.adjList(2).edgeWeights)
+  //var row1 = MRow(myNet.nodes(0),myNet.adjList(0).edgeWeights)
+  //var row2 = MRow(myNet.nodes(1),myNet.adjList(1).edgeWeights)
+  //var row3 = MRow(myNet.nodes(2),myNet.adjList(2).edgeWeights)
+  for(i <- 0 to nodeList.length-1) {
+      var edgeW = new ListBuffer[Double]()
+      System.out.println("Connections for "+ nodeList(i))
+      for (j <- 0 to nodeList.length-1) {
+          var eW = mParser.checkWeight(nodeList(i),nodeList(j))
+          System.out.print(" "+ "(" + nodeList(j) +"," + eW + ") ")
+          edgeW += eW
+      }
+      System.out.println(" ")
+      var newRow = MRow(nodeList(i),edgeW)
+      rowList+=newRow
+  }
+  //row1 = MRow(nodeList)
+  //rowList+=row1
+  //rowList+=row2
+  //rowList+=row3
   
-  rowList+=row1
-  rowList+=row2
-  rowList+=row3
-  
-  var myNet1 = new AdjMatrix("TestNetwork",nodeList, rowList)
+  var myNet1 = new AdjMatrix("TestNetwork",nodeList, activationList, rowList)
   
    Ok(Json.toJson(myNet1))
 }
