@@ -1,10 +1,7 @@
-@(person: Form[CreatePersonForm])(implicit messages: Messages)
 
 @import helper._
 
 @main("Ethical Advisor Tool") {
-
-
 
 <div id="header">
 <h1>Ethical Advisor</h1>
@@ -53,7 +50,7 @@
  <!-- <button onclick="myTestGetFunction()"><p style="font-size:12px">Compile</p></button> --> 
  
  <script type="text/javascript">
- function myCompileFunction() {
+ function compileFunction() {
   $(function()
     {
         var fileDisplayArea = document.getElementById('aboutDescription');
@@ -110,32 +107,66 @@
  
 
 
-<button onclick="myCompileFunction()"><p style="font-size:12px">Compile</p></button>
+<button onclick="compileFunction()"><p style="font-size:12px">Compile</p></button>
 
 
 <script type="text/javascript">
- function myTestPostFunction() {
+ function visualizeFunction() {
   $(function()
-{
-        $.post("/entity",
+    {
+        var fileDisplayArea = document.getElementById('aboutDescription');
+        var contents = fileDisplayArea.textContent;
+        
+        $.post("/entityJSON",
         {
-                name: "John Doe",
+                model: $('#aboutDescription').val(),
                 age: [[1, 2], [3, 4]]
                 
         },
         function(data, textStatus)
         {
-                alert("Response from server: " + data.name + "  " + data.price);
+               // alert("Response from server: " + data.name + "  "+ data.nodes[0] + 
+               //"  " + data.adjList[0].name + " " + data.adjList[0].edgeWeights);
+                
+                var nodedata = new vis.DataSet();
+                var edges = new vis.DataSet();
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    if (data.activations[i] > 0.25) {
+                        nodedata.add({id: i, label: data.nodes[i], color:'red'});
+                    } else {
+                        nodedata.add({id: i, label: data.nodes[i]});
+                    }
+                }
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    for (j=0; j<data.nodes.length; j++) {
+                        if (data.adjList[i].edgeWeights[j] > 0.0) {
+                            edges.add({from: i, to: j});
+                        }
+                    }
+                }
+                
+                var container = document.getElementById('mynetwork');
+                var data = {
+                    nodes: nodedata,
+                    edges: edges
+                };
+                var options = {
+                    edges: {
+                    arrows: 'to',
+                }
+            };
+                var network = new vis.Network(container, data, options);
+            
         });
-});
-
-
+    });
 };
 
 </script>
 
 
-<button onclick="myTestPostFunction()"><p style="font-size:12px">Visualize Network</p></button>
+<button onclick="visualizeFunction()"><p style="font-size:12px">Visualize Network</p></button>
 
 <!--
 <form name="myForm" id="testForm">
@@ -243,17 +274,4 @@ Console
 </div>
 
 <br>
-
-	<script type='text/javascript' src='@routes.Assets.versioned("javascripts/index.js")'></script>
-
-	<ul id="persons"></ul>
-
-  @form(routes.PersonController.addPerson()) {
-		@inputText(person("name"))
-		@inputText(person("age"))
-
-		<div class="buttons">
-			<input type="submit" value="Add Person"/>
-		</div>
-	}
 }
