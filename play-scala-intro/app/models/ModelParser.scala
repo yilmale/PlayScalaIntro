@@ -41,9 +41,16 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
     var activations:Map[String,Double]  = Map()
     var edgeWeights:Map[Int,Double] = Map()
     val ACTIVATION = 0.01
+    val ACTIVATIONTHRESHOLD = 0.20
+    val INITIALTHRESHOLD = 0.5
+    val CTHRESHOLD = 0.001
+    val MAXITERATION = 200
+    val MAX = 1.0
+    val MIN = -1.0
+    val DECAYRATE = 0.05
     
      def graphIterator() {
-      var V = g.getVertices
+      var V = myG.getVertices
       var itr = V.iterator()
       System.out.println("Vertex List: ")
       while (itr.hasNext()) {
@@ -63,7 +70,7 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
     def getNodes() : ListBuffer[String]  = {
         var rt = new ListBuffer[String]()
         var nStr :String = null
-        var V = g.getVertices
+        var V = myG.getVertices
         var itr = V.iterator()
         while (itr.hasNext()) {
             var myN = itr.next()
@@ -75,7 +82,7 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
     
     def getActivations() : ListBuffer[Double] = {
         var act = new ListBuffer[Double]()
-        var V = g.getVertices
+        var V = myG.getVertices
         var itr = V.iterator()
         while (itr.hasNext()) {
             var myN = itr.next()
@@ -108,40 +115,51 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
         return eWeight
     }
     
-    /*
-    def getEdgeWeights() : ArrayBuffer[ArrayBuffer[Double]]  = {
-        var edgeW = new ArrayBuffer[ArrayBuffer[Double]]()
-        var rt = new ListBuffer[String]()
-        var nStr :String = null
-        var V = g.getVertices
-        var itr = V.iterator()
+     def activationCompute() {
+      
+      var maxChange = 0.0
+      var count =0;
+      var V = myG.getVertices
+      var itr = V.iterator()
+      var activationsatT = activations.clone()
+      while (/*(maxChange > CTHRESHOLD) &&*/ (count < MAXITERATION)) {
         while (itr.hasNext()) {
-            var myN = itr.next()
-            nStr = new String(myN)
-            rt += nStr
+          var myNode=itr.next()
+          var newA = update(myNode,activationsatT)
+          var diffA = Math.abs(newA-activations(myNode))
+          if (diffA > maxChange) maxChange = diffA 
+          activations(myNode)=newA       
         }
-        
-        var V1 = g.getVertices
-        var itr1 = V1.iterator()
-        while (itr.hasNext()) {
-            var incIter = g.getIncidentEdges(myN).iterator()
-            while (incIter.hasNext()) {
-                var myEdge = incIter.next()
-                var nName= g.getEndpoints(myEdge).getSecond
-            }
-        }
-        
-            var incIter = g.getIncidentEdges(myN).iterator()
-            while (incIter.hasNext()) {
-                var myEdge = incIter.next()
-                System.out.println("Incident edge number: "+ myEdge+" Weight is " + edgeWeights(myEdge) +
-                        " Source is "+g.getEndpoints(myEdge).getFirst+" Target is "+ g.getEndpoints(myEdge).getSecond)
-                System.out.println("The opposite vertex of"+myN+" in edge"+ myEdge+" is  "+ g.getOpposite(myN,myEdge))
-            }
-        }
-        return edgeW
+        itr=V.iterator()
+        activationsatT = activations.clone()
+        count+=1
+      }
+      activations.foreach(p => println("node= "+p._1 + ", activation= "+p._2))
     }
-    */
+    
+    def update (str:String, actAtT:Map[String,Double]): Double = {
+      var cActivation = actAtT(str)
+      var nActivation=0.0
+      var netFlow = 0.0;
+      var itr = g.getIncidentEdges(str).iterator()
+      while (itr.hasNext()) {
+        var myEdge = itr.next()
+        var vt = g.getOpposite(str,myEdge)
+        netFlow += edgeWeights(myEdge)*actAtT(vt) 
+      }
+      
+      if (netFlow > 0) {
+        nActivation=(cActivation*(1.0-DECAYRATE))+(netFlow*(MAX-cActivation))
+        nActivation=Math.max(-1.0,Math.min(1.0, nActivation))
+      }
+      else {
+        nActivation=(cActivation*(1.0-DECAYRATE))+(netFlow*(cActivation-MIN))
+        nActivation = Math.min(Math.max(-1.0, nActivation),1.0)
+      }
+      
+      return nActivation
+    }
+    
     
     def parse() {
         var dbFactory = DocumentBuilderFactory.newInstance()
@@ -345,5 +363,3 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
             }
         }
     }
-    
-}

@@ -228,7 +228,7 @@ def addEntityJSON = Action { implicit request =>
   
   activationList = mParser.getActivations()
   
-  activationList(0) = 0.5
+  //activationList(0) = 0.5
   //nodeList += myNet.nodes(0)
   //nodeList += myNet.nodes(1)
   //nodeList += myNet.nodes(2)

@@ -142,7 +142,11 @@
                 for (i=0; i < data.nodes.length; i++) {
                     for (j=0; j<data.nodes.length; j++) {
                         if (data.adjList[i].edgeWeights[j] > 0.0) {
-                            edges.add({from: i, to: j});
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:0 });
+                        }
+                        else if (data.adjList[i].edgeWeights[j] < 0.0)
+                        {
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:8 });
                         }
                     }
                 }
@@ -154,7 +158,7 @@
                 };
                 var options = {
                     edges: {
-                    arrows: 'to',
+                    //arrows: 'to',
                 }
             };
                 var network = new vis.Network(container, data, options);
@@ -231,9 +235,67 @@ $(document).ready(function(){
 
 -->
 
+<script type="text/javascript">
+ function computeActiveNodes() {
+  $(function()
+    {
+        var fileDisplayArea = document.getElementById('aboutDescription');
+        var contents = fileDisplayArea.textContent;
+        
+        $.post("/entityJSON",
+        {
+                model: $('#aboutDescription').val(),
+                age: [[1, 2], [3, 4]]
+                
+        },
+        function(data, textStatus)
+        {
+               // alert("Response from server: " + data.name + "  "+ data.nodes[0] + 
+               //"  " + data.adjList[0].name + " " + data.adjList[0].edgeWeights);
+                
+                var nodedata = new vis.DataSet();
+                var edges = new vis.DataSet();
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    if (data.activations[i] > 0.25) {
+                        nodedata.add({id: i, label: data.nodes[i], color:'red'});
+                    } else {
+                        nodedata.add({id: i, label: data.nodes[i]});
+                    }
+                }
+                
+                for (i=0; i < data.nodes.length; i++) {
+                    for (j=0; j<data.nodes.length; j++) {
+                        if (data.adjList[i].edgeWeights[j] > 0.0) {
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:0 });
+                        }
+                        else if (data.adjList[i].edgeWeights[j] < 0.0)
+                        {
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:8 });
+                        }
+                    }
+                }
+                
+                var container = document.getElementById('mynetwork');
+                var data = {
+                    nodes: nodedata,
+                    edges: edges
+                };
+                var options = {
+                    edges: {
+                    //arrows: 'to',
+                }
+            };
+                var network = new vis.Network(container, data, options);
+            
+        });
+    });
+};
+
+</script>
 
 
-<button onclick="myFunction()"><p style="font-size:12px">Compute Active Nodes</p></button>
+<button onclick="computeActiveNodes()"><p style="font-size:12px">Compute Active Nodes</p></button>
 <button onclick="myFunction()"><p style="font-size:12px">Simulate</p></button>
 
 
