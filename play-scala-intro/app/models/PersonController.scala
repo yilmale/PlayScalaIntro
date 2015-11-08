@@ -8,7 +8,6 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 import play.api.libs.json.Json
 import models._
-import dal._
 import play.api.libs.json.JsValue
 
 import play.api.libs.json._
@@ -259,6 +258,57 @@ def addEntityJSON = Action { implicit request =>
   
    Ok(Json.toJson(myNet1))
 }
+
+
+def updateEntityJSON = Action { implicit request =>
+  System.out.println(request.body)
+  val myModel = request.body.asFormUrlEncoded.get("model")
+  var mystr:String = new String(myModel(0))
+  System.out.println("Received model specification is " + mystr)
+  
+  initializeGraphModel()
+  var mParser = new ModelParser(mystr,g)
+  mParser.parse()
+  mParser.graphIterator()
+  
+  var nodeList = new ListBuffer[String]()
+  
+  nodeList = mParser.getNodes()
+  
+  System.out.println("NodeList is  " + nodeList)
+  
+  var activationList = new ListBuffer[Double]()
+  
+  mParser.activationCompute()
+  activationList = mParser.getActivations()
+  
+  
+  var rowList = new ListBuffer[MRow]()
+  
+  for(i <- 0 to nodeList.length-1) {
+      var edgeW = new ListBuffer[Double]()
+      System.out.println("Connections for "+ nodeList(i))
+      for (j <- 0 to nodeList.length-1) {
+          var eW = mParser.checkWeight(nodeList(i),nodeList(j))
+          System.out.print(" "+ "(" + nodeList(j) +"," + eW + ") ")
+          edgeW += eW
+      }
+      System.out.println(" ")
+      var newRow = MRow(nodeList(i),edgeW)
+      rowList+=newRow
+  }
+  //row1 = MRow(nodeList)
+  //rowList+=row1
+  //rowList+=row2
+  //rowList+=row3
+  
+  var myNet1 = new AdjMatrix("TestNetwork",nodeList, activationList, rowList)
+  
+   Ok(Json.toJson(myNet1))
+}
+
+
+
 
 def getEntityJSONs = Action {
     val myStock = new Stock("GOOG", 650.0)

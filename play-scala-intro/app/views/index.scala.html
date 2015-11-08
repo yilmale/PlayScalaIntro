@@ -142,7 +142,7 @@
                 for (i=0; i < data.nodes.length; i++) {
                     for (j=0; j<data.nodes.length; j++) {
                         if (data.adjList[i].edgeWeights[j] > 0.0) {
-                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:0 });
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:1 });
                         }
                         else if (data.adjList[i].edgeWeights[j] < 0.0)
                         {
@@ -152,7 +152,7 @@
                 }
                 
                 var container = document.getElementById('mynetwork');
-                var data = {
+                var netdata = {
                     nodes: nodedata,
                     edges: edges
                 };
@@ -161,8 +161,18 @@
                     //arrows: 'to',
                 }
             };
-                var network = new vis.Network(container, data, options);
-            
+                var network = new vis.Network(container, netdata, options);
+                //$('#outputDescription').val("");
+                var outText = $('#outputDescription').val();
+                outText += "\r\nNode activation values:\r\n";
+                
+                for (i=0; i<data.nodes.length; i++) {
+                    outText += "Node name " + data.nodes[i] + " ";
+                    outText += "activation= " + data.activations[i] + " \r\n";
+                }
+ 
+          
+                $('#outputDescription').val(outText);
         });
     });
 };
@@ -242,7 +252,7 @@ $(document).ready(function(){
         var fileDisplayArea = document.getElementById('aboutDescription');
         var contents = fileDisplayArea.textContent;
         
-        $.post("/entityJSON",
+        $.post("/updateJSON",
         {
                 model: $('#aboutDescription').val(),
                 age: [[1, 2], [3, 4]]
@@ -267,7 +277,7 @@ $(document).ready(function(){
                 for (i=0; i < data.nodes.length; i++) {
                     for (j=0; j<data.nodes.length; j++) {
                         if (data.adjList[i].edgeWeights[j] > 0.0) {
-                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:0 });
+                            edges.add({from: i, to: j, color: 'black', min: 1, max: 15, value:1 });
                         }
                         else if (data.adjList[i].edgeWeights[j] < 0.0)
                         {
@@ -277,7 +287,7 @@ $(document).ready(function(){
                 }
                 
                 var container = document.getElementById('mynetwork');
-                var data = {
+                var netdata = {
                     nodes: nodedata,
                     edges: edges
                 };
@@ -286,8 +296,18 @@ $(document).ready(function(){
                     //arrows: 'to',
                 }
             };
-                var network = new vis.Network(container, data, options);
-            
+                var network = new vis.Network(container, netdata, options);
+                //$('#outputDescription').val("");
+                var outText = $('#outputDescription').val();
+                outText += "\r\nNode activation values:\r\n";
+                
+                for (i=0; i<data.nodes.length; i++) {
+                    outText += "Node name " + data.nodes[i] + " ";
+                    outText += "activation= " + data.activations[i] + " \r\n";
+                }
+ 
+          
+                $('#outputDescription').val(outText);
         });
     });
 };
@@ -311,7 +331,17 @@ $(document).ready(function(){
 
 
 <button onclick="clearModel()"><p style="font-size:12px">Clear Model</p></button>
-<button onclick="myFunction()"><p style="font-size:12px">Clear Console</p></button>
+
+
+<script type="text/javascript">
+  function clearConsole() {
+        $('#outputDescription').val("");
+       
+  }
+  
+</script>
+
+<button onclick="clearConsole()"><p style="font-size:12px">Clear Console</p></button>
 
 </div>
 
@@ -333,7 +363,14 @@ style="resize: none;" data-role="none"></textarea>
 <div id="footer">
 Console
 
+<br>
+
+<textarea rows="15" cols="150" id="outputDescription"
+style="resize: none;" data-role="none"></textarea>
+
 </div>
 
 <br>
 }
+
+

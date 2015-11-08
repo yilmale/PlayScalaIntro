@@ -363,3 +363,5 @@ class ModelParser(model:String, g:Graph[String,Int] ) {
             }
         }
     }
+}
+}
