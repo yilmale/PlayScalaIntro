@@ -142,16 +142,6 @@ implicit val placeWrites = new Writes[Place] {
 }
 
 
-/*def addEntity = Action { implicit request =>
-  val body: AnyContent = request.body
-  val textBody: Option[String] = body.asText 
-  textBody.map { text =>
-    Ok("Got: " + text)
-  }.getOrElse {
-    BadRequest("Expecting text/plain request body")  
-  }
-  
-}*/
 
 
 def addEntity = Action { implicit request =>
@@ -260,6 +250,13 @@ def addEntityJSON = Action { implicit request =>
 }
 
 
+def simulationSettings = Action { implicit request =>
+  System.out.println(request.body)
+  val myStock = new Stock("GOOG", 650.0)
+  Ok(Json.toJson(myStock))
+}
+
+
 def updateEntityJSON = Action { implicit request =>
   System.out.println(request.body)
   val myModel = request.body.asFormUrlEncoded.get("model")
@@ -297,10 +294,7 @@ def updateEntityJSON = Action { implicit request =>
       var newRow = MRow(nodeList(i),edgeW)
       rowList+=newRow
   }
-  //row1 = MRow(nodeList)
-  //rowList+=row1
-  //rowList+=row2
-  //rowList+=row3
+  
   
   var myNet1 = new AdjMatrix("TestNetwork",nodeList, activationList, rowList)
   

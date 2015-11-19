@@ -1,4 +1,3 @@
-
 @import helper._
 
 @main("Ethical Advisor Tool") {
@@ -47,7 +46,6 @@
 </script>
 
 <!-- This is a comment --> 
- <!-- <button onclick="myTestGetFunction()"><p style="font-size:12px">Compile</p></button> --> 
  
  <script type="text/javascript">
  function compileFunction() {
@@ -182,68 +180,7 @@
 
 <button onclick="visualizeFunction()"><p style="font-size:12px">Visualize Network</p></button>
 
-<!--
-<form name="myForm" id="testForm">
-    <input type="text" name="first_name" value="" />
-    <input type="text" name="last_name" value="" />
-    <input type="button" id="submit1" value="Submit by Form ID1" />
-    <input type="button" id="submit2" value="Submit by Form ID2" />
-    <input type="button" id="submit3" value="Submit by Form ID3" />
-</form>
 
-<script>
-$(document).ready(function(){
-    $("#submit1").click(function() {
-        $.post("/entity", items,
-        function(data, status){
-        alert("Data: " + data + "\nStatus: " + status);
-    });
-    });
-
-    
-    $("#submit2").click(function() {
-    $.ajax({
-    url : "/entityJSON",
-    type: "POST",
-    contentType: "application/form-url-encoded",
-    dataType: "application/json",
-    data: {
-                name: "John Doe",
-                age: [[1, 2], [3, 4]]
-                
-        },
-    success: function(mydata, status)
-    {
-        alert("Data received " + mydata.symbol + mydata.price);
-    },
-    error: function( jqXhr, textStatus, errorThrown ){
-        alert(errorThrown);
-    }
-    });
-    });   
-    
-    $("#submit3").click(function() {
-    $.ajax({
-    url : "/entityJSONs",
-    type: "GET",
-    dataType: "json",
-    success: function(data, status)
-    {
-        alert("Data received " + data.symbol + data.price);
-    },
-    error: function( jqXhr, textStatus, errorThrown ){
-        alert(errorThrown);
-    }
-    });
-    });   
-    
-    
-    
-});   
-
-</script>
-
--->
 
 <script type="text/javascript">
  function computeActiveNodes() {
@@ -316,7 +253,96 @@ $(document).ready(function(){
 
 
 <button onclick="computeActiveNodes()"><p style="font-size:12px">Compute Active Nodes</p></button>
-<button onclick="myFunction()"><p style="font-size:12px">Simulate</p></button>
+
+<script type="text/javascript">
+ 
+  
+  function myOnChange(e) {
+
+        alert('Hello');
+
+    }
+    
+  function myOnClick(e) {
+
+    alert('Hello');
+    
+    $.post("/experimentConf",
+        {
+                nodeSize: $('#nodeC').val(),
+                edgeSize: $('#edgeC').val(),
+                density: $('#denseV').val(),
+                age: [[1, 2], [3, 4]]
+                
+        },
+        function(data, textStatus)
+        {
+            
+            
+        });
+        
+    }
+    
+    
+  function mySimulateFunction() {
+        
+        myform=document.getElementById("experiment");
+        mybutton=document.createElement("BUTTON");
+        mybutton.onclick=myOnClick;
+        mybutton.style.height=20;
+        mybutton.style.width=75;
+        theText=document.createTextNode("Random Graph");
+        mybutton.appendChild(theText);
+        myform.appendChild(mybutton);
+
+        
+        var nodedata = new vis.DataSet();
+        var edges = new vis.DataSet();
+        
+        var nodeCount = 20;
+	  	for (i=0; i < nodeCount; i++) {
+			nodedata.add({id: i, label: "N"});
+		}
+	  
+	  	for (i=0; i< nodeCount; i++) {
+			for (j=0; j < nodeCount; j++) {
+				var  x=Math.random();
+					if (x < 0.25) {
+						edges.add({from: i, to: j});
+							  
+					}
+				}
+		}
+				
+	  			
+        var container = document.getElementById('mynetwork');
+        var netdata = {
+            nodes: nodedata,
+            edges: edges
+        };
+        var options = {
+            edges: {
+                 //arrows: 'to',
+            }
+        };
+       var network = new vis.Network(container, netdata, options);
+                //$('#outputDescription').val("");
+        var outText = $('#outputDescription').val();
+        outText += "\r\nNode activation values:\r\n";
+                
+
+        $('#outputDescription').val(outText);
+       
+  }
+  
+</script>
+	
+	
+
+
+
+<button onclick="mySimulateFunction()"><p style="font-size:12px">Simulate</p></button>
+
 
 
 
@@ -360,6 +386,17 @@ $(document).ready(function(){
 style="resize: none;" data-role="none"></textarea>
 </div>
 
+<div id="section">
+<p><b>Experiment Settings</b></p>
+<form id="experiment">
+  Number of Nodes: <input type="text" name="nodes" id="nodeC" value="" /> <br>
+  Number of Edges: <input type="text" name="edges" id="edgeC" value="" />  <br>
+  Density: <input type="text" name="density" id="denseV" value="" />   
+  
+</form>
+
+</div>
+
 <div id="footer">
 Console
 
@@ -372,5 +409,4 @@ style="resize: none;" data-role="none"></textarea>
 
 <br>
 }
-
 
