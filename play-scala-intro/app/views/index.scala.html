@@ -270,9 +270,8 @@
     $.post("/experimentConf",
         {
                 nodeSize: $('#nodeC').val(),
-                edgeSize: $('#edgeC').val(),
                 density: $('#denseV').val(),
-                age: [[1, 2], [3, 4]]
+                gType: 0
                 
         },
         function(data, textStatus)
@@ -372,13 +371,8 @@
 </div>
 
 <div id="section">
-<script>
-  var canvas = document.querySelector("canvas");
-  var context = canvas.getContext("2d");
-</script>
 <div id="mynetwork"></div>
-
-
+<div id="mynetwork1"></div>
 </div>
 
 <div id="section">
@@ -389,9 +383,8 @@ style="resize: none;" data-role="none"></textarea>
 <div id="section">
 <p><b>Experiment Settings</b></p>
 <form id="experiment">
-  Number of Nodes: <input type="text" name="nodes" id="nodeC" value="" /> <br>
-  Number of Edges: <input type="text" name="edges" id="edgeC" value="" />  <br>
-  Density: <input type="text" name="density" id="denseV" value="" />   
+  Number of Nodes: <input type="number" name="nodes" id="nodeC" value="" /> <br>
+  Density: <input type="number" name="density" step="0.01" id="denseV" value="" />   
   
 </form>
 

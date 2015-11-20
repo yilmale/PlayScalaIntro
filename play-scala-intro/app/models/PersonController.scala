@@ -252,6 +252,15 @@ def addEntityJSON = Action { implicit request =>
 
 def simulationSettings = Action { implicit request =>
   System.out.println(request.body)
+  val nodeSize=request.body.asFormUrlEncoded.get("nodeSize")
+  var myN=nodeSize(0)
+  System.out.println("Received node size is " + myN)
+  val d=request.body.asFormUrlEncoded.get("density")
+  var dt=d(0)
+  System.out.println("The density size is " + dt)
+  val gt=request.body.asFormUrlEncoded.get("gType")
+  var g=gt(0)
+  System.out.println("The graph type is " + g)
   val myStock = new Stock("GOOG", 650.0)
   Ok(Json.toJson(myStock))
 }
