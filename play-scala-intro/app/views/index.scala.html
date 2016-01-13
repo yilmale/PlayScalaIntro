@@ -20,7 +20,8 @@
 	      var contents = r.result;
           
           
-           $('#aboutDescription').val(contents) 
+           //$('#aboutDescription').val(contents); 
+           editor.setValue(contents);
       }
       r.readAsText(f);
     } else { 
@@ -54,11 +55,13 @@
   $(function()
     {
         var fileDisplayArea = document.getElementById('aboutDescription');
-        var contents = fileDisplayArea.textContent;
+        //var contents = fileDisplayArea.textContent;
+        var contents = editor.getValue();
         
         $.post("/entityJSON",
         {
-                model: $('#aboutDescription').val(),
+                model: editor.getValue(),
+                //model: $('#aboutDescription').val(),
                 age: [[1, 2], [3, 4]]
                 
         },
@@ -127,12 +130,15 @@
  function computeActiveNodes() {
   $(function()
     {
-        var fileDisplayArea = document.getElementById('aboutDescription');
-        var contents = fileDisplayArea.textContent;
+        //var fileDisplayArea = document.getElementById('aboutDescription');
+        //var contents = fileDisplayArea.textContent;
+        //var econtent = editor.getValue();
+        //alert(econtent);
         
         $.post("/updateJSON",
         {
-                model: $('#aboutDescription').val(),
+                model: editor.getValue(),
+                //model: $('#aboutDescription').val(),
                 age: [[1, 2], [3, 4]]
                 
         },
@@ -287,19 +293,19 @@ style="resize: none;" data-role="none"></textarea>
 <br>
 <div id="section">
 
-<iframe src="http://localhost:8080" width="1150" height="900"></iframe>
+<div id="editor">
+    
+</div>
+
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/eclipse");
+    editor.getSession().setMode("ace/mode/xml");
+</script>
 </div>
 
 
 <div id="footer">
-Compiled Specification
-
-<br>
-
-<textarea rows="15" cols="150" id="aboutDescription"
-style="resize: none;" data-role="none"></textarea>
-
-<br>
 
 Console
 
